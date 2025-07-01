@@ -1,1 +1,303 @@
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Button, Pressable, ScrollView, Alert, Linking } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+export default function App() {
+  const [fps, setFps] = useState("30");
+  const [flags, setFlags] = useState([]);
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const savedFps = await AsyncStorage.getItem('fps');
+        const savedFlags = await AsyncStorage.getItem('flags');
+        if (savedFps) setFps(savedFps);
+        if (savedFlags) setFlags(JSON.parse(savedFlags));
+      } catch (e) {
+        console.error('Failed to load settings', e);
+      }
+    };
+    loadSettings();
+  }, []);
+
+  const updateFlags = (flag) => {
+    setFlags((prevFlags) =>
+      prevFlags.includes(flag)
+        ? prevFlags.filter(item => item !== flag)
+        : [...prevFlags, flag]
+    );
+  };
+
+  const applySettings = async () => {
+    try {
+      await AsyncStorage.setItem('fps', fps);
+      await AsyncStorage.setItem('flags', JSON.stringify(flags));
+      Alert.alert("Settings Saved", `FPS: ${fps}\nFlags: ${flags.join(', ') || 'None'}`);
+    } catch (e) {
+      console.error('Failed to save settings', e);
+    }
+  };
+
+  const getLaunchCommand = () => {
+    return `roblox://launch?fps=${fps}&flags=${flags.join(',')}`;
+  };
+
+  const openInRoblox = () => {
+    const command = getLaunchCommand();
+    Linking.openURL(command).catch(err => console.error("Failed to open URL:", err));
+  };
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>Bloxstrap Mobile</Text>
+
+      <View style={styles.section}>
+        <Text style={styles.label}>Select FPS Cap:</Text>
+        <View style={styles.pickerWrapper}>
+          <Picker selectedValue={fps} style={styles.picker} onValueChange={setFps}>
+            <Picker.Item label="24 FPS" value="24" />
+            <Picker.Item label="30 FPS" value="30" />
+            <Picker.Item label="60 FPS" value="60" />
+            <Picker.Item label="120 FPS" value="120" />
+            <Picker.Item label="144 FPS" value="144" />
+            <Picker.Item label="Unlimited" value="unlimited" />
+          </Picker>
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.label}>Launch Flags:</Text>
+        <View style={styles.buttonGroup}>
+          {["flag1", "flag2", "flag3"].map((flag) => (
+            <Pressable
+              key={flag}
+              onPress={() => updateFlags(flag)}
+              style={[
+                styles.flagButton,
+                flags.includes(flag) ? styles.selectedFlagButton : styles.unselectedFlagButton
+              ]}
+            >
+              <Text>{flag}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+
+      <Pressable onPress={applySettings} style={styles.button}>
+        <Text style={styles.buttonText}>Save Settings</Text>
+      </Pressable>
+
+      <Pressable onPress={openInRoblox} style={styles.button}>
+        <Text style={styles.buttonText}>Launch Roblox</Text>
+      </Pressable>
+
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    padding: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  section: {
+    marginVertical: 16,
+  },
+  label: {
+    fontSize: 18,
+  },
+  pickerWrapper: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+  },
+  buttonGroup: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  flagButton: {
+    borderWidth: 1,
+    borderColor: '#000',
+    padding: 10,
+    margin: 5,
+    borderRadius: 5,
+  },
+  selectedFlagButton: {
+    backgroundColor: '#D3D3D3',
+  },
+  unselectedFlagButton: {},
+  button: {
+    backgroundColor: '#007BFF',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  }
+});import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Button, Pressable, ScrollView, Alert, Linking } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export default function App() {
+  const [fps, setFps] = useState("30");
+  const [flags, setFlags] = useState([]);
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const savedFps = await AsyncStorage.getItem('fps');
+        const savedFlags = await AsyncStorage.getItem('flags');
+        if (savedFps) setFps(savedFps);
+        if (savedFlags) setFlags(JSON.parse(savedFlags));
+      } catch (e) {
+        console.error('Failed to load settings', e);
+      }
+    };
+    loadSettings();
+  }, []);
+
+  const updateFlags = (flag) => {
+    setFlags((prevFlags) =>
+      prevFlags.includes(flag)
+        ? prevFlags.filter(item => item !== flag)
+        : [...prevFlags, flag]
+    );
+  };
+
+  const applySettings = async () => {
+    try {
+      await AsyncStorage.setItem('fps', fps);
+      await AsyncStorage.setItem('flags', JSON.stringify(flags));
+      Alert.alert("Settings Saved", `FPS: ${fps}\nFlags: ${flags.join(', ') || 'None'}`);
+    } catch (e) {
+      console.error('Failed to save settings', e);
+    }
+  };
+
+  const getLaunchCommand = () => {
+    return `roblox://launch?fps=${fps}&flags=${flags.join(',')}`;
+  };
+
+  const openInRoblox = () => {
+    const command = getLaunchCommand();
+    Linking.openURL(command).catch(err => console.error("Failed to open URL:", err));
+  };
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>Bloxstrap Mobile</Text>
+
+      <View style={styles.section}>
+        <Text style={styles.label}>Select FPS Cap:</Text>
+        <View style={styles.pickerWrapper}>
+          <Picker selectedValue={fps} style={styles.picker} onValueChange={setFps}>
+            <Picker.Item label="24 FPS" value="24" />
+            <Picker.Item label="30 FPS" value="30" />
+            <Picker.Item label="60 FPS" value="60" />
+            <Picker.Item label="120 FPS" value="120" />
+            <Picker.Item label="144 FPS" value="144" />
+            <Picker.Item label="Unlimited" value="unlimited" />
+          </Picker>
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.label}>Launch Flags:</Text>
+        <View style={styles.buttonGroup}>
+          {["flag1", "flag2", "flag3"].map((flag) => (
+            <Pressable
+              key={flag}
+              onPress={() => updateFlags(flag)}
+              style={[
+                styles.flagButton,
+                flags.includes(flag) ? styles.selectedFlagButton : styles.unselectedFlagButton
+              ]}
+            >
+              <Text>{flag}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+
+      <Pressable onPress={applySettings} style={styles.button}>
+        <Text style={styles.buttonText}>Save Settings</Text>
+      </Pressable>
+
+      <Pressable onPress={openInRoblox} style={styles.button}>
+        <Text style={styles.buttonText}>Launch Roblox</Text>
+      </Pressable>
+
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    padding: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  section: {
+    marginVertical: 16,
+  },
+  label: {
+    fontSize: 18,
+  },
+  pickerWrapper: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+  },
+  buttonGroup: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  flagButton: {
+    borderWidth: 1,
+    borderColor: '#000',
+    padding: 10,
+    margin: 5,
+    borderRadius: 5,
+  },
+  selectedFlagButton: {
+    backgroundColor: '#D3D3D3',
+  },
+  unselectedFlagButton: {},
+  button: {
+    backgroundColor: '#007BFF',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  }
+});
